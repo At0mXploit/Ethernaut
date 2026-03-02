@@ -127,7 +127,7 @@ await contract.withdraw()
 await getBalance(contract.address) // should return "0"
 ```
 
-![[Images/1.png]]
+![1](Images/1.png)
 
 # 2 - Fallout
 
@@ -196,7 +196,7 @@ That's it. Verify:
 await contract.owner() // should be your player address
 ```
 
-![[Images/2.png]]
+![2](Images/2.png)
 
 # 3 - Coin Flip
 
@@ -392,7 +392,7 @@ In Remix's **Deployed Contracts** section at the bottom left:
 3. Click `attack` → confirm in MetaMask → wait for tx to confirm (~12 sec)
 4. Repeat **10 times**, waiting for each tx to confirm before the next
 
-![[Images/3.png]]
+![3](Images/3.png)
 
 More easy way than manually doing this is to copy the deployed contract address from Remix.
 
@@ -440,7 +440,7 @@ Now Metamask will pop up automatically and confirm it 10 times in row.
 (await contract.consecutiveWins()).toString()
 ```
 
-![[Images/4.png]]
+![4](Images/4.png)
 
 Now Submit the level.
 # 4 - Telephone
@@ -536,9 +536,10 @@ await contract.owner()
 // should return your wallet address
 ```
 
-![[Images/5.png]]
+![5](Images/5.png)
 
-![[Images/6.png]]
+![6](Images/6.png)
+
 # 5 - Token
 
 The goal of this level is for you to hack the basic token contract below.
@@ -762,7 +763,7 @@ contract ForceAttack {
 }
 ```
 
-![[Images/7.png]]
+![7](Images/7.png)
 
 Verify in console:
 
@@ -901,7 +902,7 @@ Check current prize:
 
 Deploy `KingAttack` on Remix with slightly more ETH than the prize `1000000000000001` Wei.
 
-![[Images/8.png]]
+![8](Images/8.png)
 
 Call `attack` with `contract.address`.
 
